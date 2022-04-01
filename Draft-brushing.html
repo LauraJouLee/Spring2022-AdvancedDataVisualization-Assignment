@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <title>Tree Explore</title>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.21.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@6"></script>
+</head>
+
+<body>
+  <div id="vis"></div>
+
+<script type="text/javascript">
+  var yourVlSpec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "config": {"concat": {"spacing": 30}},
+  "data": {
+    "url": "https://gis-cityofchampaign.opendata.arcgis.com/datasets/979bbeefffea408e8f1cb7a397196c64_22.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D", 
+    "format": {
+      "type": "csv"
+    }
+  },
+
+  "transform": [
+    {"filter": {"field": "COND", "valid": false}}
+  ],
+
+  
+  "hconcat": [
+  {
+    "layer": [
+      {
+        "params": [{"name": "brush", "select": {"type": "interval", "encodings": ["x"]}}],
+        "mark": "bar",
+        "width": 400, "height": 300,
+        "encoding": {
+          "x": {"timeUnit": "year", "field": "INSPECT_DT", "type": "temporal", "scale": {"domain": [2011, 2023]}},
+          "y": {"field": "OBJECTID", "aggregate": "count"}
+        }
+      },
+      {
+        "transform": [{"filter": {"param": "brush"}}],
+        "mark": "bar",
+        "encoding": {
+          "x": {"timeUnit": "year", "field": "INSPECT_DT", "bin": true},
+          "y": {"aggregate": "count"},
+          "color": {"value": "goldenrod"}
+        }
+      }
+    ]
+  },
+    {
+      "width": 400, "height": 300,
+      "mark": "bar",
+      "transform": [{"filter": {"param": "brush"}}],
+      "encoding": {
+        "x": {"timeUnit": "month", "field": "INSPECT_DT", "type": "temporal"},
+        "y": {"field": "OBJECTID", "aggregate": "count"}
+      }
+    },
+    {
+      "height": 300,
+      "mark": "bar",
+      "transform": [{"filter": {"param": "brush"}}],
+      "encoding": {
+        "x": {"field": "COND", "type": "nominal"},
+        "y": {"field": "OBJECTID", "aggregate": "count"}  
+      }
+    }
+  ]
+}
+vegaEmbed('#vis', yourVlSpec);
+    </script>
+  </body>
+</html>
